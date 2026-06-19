@@ -86,7 +86,7 @@ ${BOLD}${CYAN}╔═════════════════════
 Detecté qué hay instalado en tu Mac. Lo que ya está aparece
 ${DIM}deshabilitado${RESET}. Solo elegís entre lo que falta.
 
-${DIM}↑/↓ navegar  ·  ESPACIO marcar/desmarcar  ·  ENTER continuar  ·  Q cancelar${RESET}
+${DIM}↑/↓ (o W/S) navegar · ESPACIO marcar · ENTER continuar · Q cancelar${RESET}
 
 EOF
   for i in "${!ITEMS_LABEL[@]}"; do
@@ -152,12 +152,17 @@ EOF
     IFS= read -rsn1 key
     case "$key" in
       $'\x1b')
-        IFS= read -rsn2 -t 0.1 rest || rest=""
-        case "$rest" in
+        # Arrow keys: ESC [ A/B/C/D. Leemos byte por byte con timeout amplio
+        # para que terminales lentas también funcionen.
+        IFS= read -rsn1 -t 0.5 b1 || b1=""
+        IFS= read -rsn1 -t 0.5 b2 || b2=""
+        case "${b1}${b2}" in
           "[A") cursor=$(next_selectable "$cursor" -1) ;;
           "[B") cursor=$(next_selectable "$cursor" 1) ;;
         esac
         ;;
+      k|K|w|W) cursor=$(next_selectable "$cursor" -1) ;;
+      j|J|s|S) cursor=$(next_selectable "$cursor" 1) ;;
       " ")
         if [ "${ITEMS_LOCKED[$cursor]}" = "0" ] && [ "${ITEMS_INSTALLED[$cursor]}" = "0" ]; then
           if [ "${ITEMS_CHECKED[$cursor]}" = "1" ]; then
