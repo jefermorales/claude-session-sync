@@ -152,11 +152,12 @@ EOF
     IFS= read -rsn1 key
     case "$key" in
       $'\x1b')
-        # Arrow keys: leemos byte por byte después del ESC hasta encontrar
-        # la letra final (A/B/C/D) o que pasen 50ms sin más bytes. Cubre todos
-        # los formatos: ESC[A, ESCOA, ESC[1;5A, etc.
+        # Arrow keys. macOS viene con bash 3.2 que NO acepta timeouts
+        # decimales (-t 0.05 falla). Usamos -t 1 (entero) que es compatible
+        # con TODAS las versiones. Los bytes de una arrow key llegan en
+        # microsegundos, así que en la práctica no hay espera notoria.
         rest=""
-        while IFS= read -rsn1 -t 0.05 c; do
+        while IFS= read -rsn1 -t 1 c; do
           rest+="$c"
           case "$c" in A|B|C|D|~) break ;; esac
           [ ${#rest} -ge 8 ] && break
