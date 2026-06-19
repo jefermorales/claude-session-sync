@@ -35,22 +35,25 @@ Andá a la página de Releases: <https://github.com/jefermorales/claude-session-
 
 En **"Assets"** vas a ver dos opciones — elegí la que prefieras:
 
-**Opción A — App nativa de macOS (recomendada, vive en Aplicaciones):**
+**Opción A — App nativa de macOS (recomendada, sin terminal):**
 
 1. Descargá `Claude-Code-Setup.zip`
 2. Doble clic en el ZIP → aparece **`Claude Code Setup.app`**
 3. Arrastrá la app a tu carpeta **Aplicaciones**
-4. Doble clic en la app → arranca el wizard
-5. Es liviana (~30 KB) y no consume recursos en background
+4. Doble clic en la app → arranca con **diálogos nativos de macOS** (sin
+   terminal visible). Te muestra qué está instalado, te deja elegir los
+   opcionales con checkboxes, y va instalando con notificaciones del sistema.
 
-**Opción B — Script `.command` (más simple, va a Descargas):**
+**Opción B — Script `.command` (más control, abre terminal):**
 
 1. Descargá `claude-session-sync-installer.zip`
 2. Doble clic en el ZIP → aparece `install.command`
-3. Doble clic en `install.command` → arranca el wizard
+3. Doble clic en `install.command` → wizard interactivo en terminal con
+   checkboxes navegables por flechas (↑↓ o W/S).
 
-Ambas opciones ejecutan exactamente el mismo wizard. La diferencia es solo
-dónde vive el archivo y cómo se ve en Finder.
+Ambas opciones ejecutan la misma lógica de detección + instalación +
+bootstrap. La diferencia es la UI: la app usa diálogos macOS, el `.command`
+usa terminal.
 
 ### ⚠️ Si te aparece "Apple no pudo verificar..."
 
