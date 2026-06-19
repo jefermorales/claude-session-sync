@@ -31,14 +31,26 @@
 
 ### Paso 2 — Descargar y ejecutar el instalador
 
-**Descargá el instalador desde Releases (ya viene listo para doble clic):**
+Andá a la página de Releases: <https://github.com/jefermorales/claude-session-sync/releases/latest>
 
-<https://github.com/jefermorales/claude-session-sync/releases/latest>
+En **"Assets"** vas a ver dos opciones — elegí la que prefieras:
 
-1. En esa página, bajá hasta **"Assets"** y descargá
-   `claude-session-sync-installer.zip`.
-2. **Doble clic** en el ZIP — macOS lo descomprime y aparece `install.command`.
-3. **Doble clic** en `install.command`.
+**Opción A — App nativa de macOS (recomendada, vive en Aplicaciones):**
+
+1. Descargá `Claude-Code-Setup.zip`
+2. Doble clic en el ZIP → aparece **`Claude Code Setup.app`**
+3. Arrastrá la app a tu carpeta **Aplicaciones**
+4. Doble clic en la app → arranca el wizard
+5. Es liviana (~30 KB) y no consume recursos en background
+
+**Opción B — Script `.command` (más simple, va a Descargas):**
+
+1. Descargá `claude-session-sync-installer.zip`
+2. Doble clic en el ZIP → aparece `install.command`
+3. Doble clic en `install.command` → arranca el wizard
+
+Ambas opciones ejecutan exactamente el mismo wizard. La diferencia es solo
+dónde vive el archivo y cómo se ve en Finder.
 
 ### ⚠️ Si te aparece "Apple no pudo verificar..."
 

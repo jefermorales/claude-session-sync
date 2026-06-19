@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# launcher — abre install.command en Terminal.app
+set -e
+APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SCRIPT="$APP_DIR/Resources/install.command"
+
+# Asegurar permisos por si el .app vino de un sync raro
+chmod +x "$SCRIPT" 2>/dev/null || true
+
+# Limpiar cuarentena del script para que no pegue el segundo Gatekeeper
+xattr -d com.apple.quarantine "$SCRIPT" 2>/dev/null || true
+
+# Abrir en Terminal con AppleScript
+osascript <<EOF
+tell application "Terminal"
+  activate
+  do script "bash '$SCRIPT'; exit"
+end tell
+EOF
