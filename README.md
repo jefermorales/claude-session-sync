@@ -31,17 +31,14 @@
 
 ### Paso 2 — Descargar y ejecutar el instalador
 
-**Descargá el archivo desde acá:**
+**Descargá el instalador desde Releases (ya viene listo para doble clic):**
 
-<https://raw.githubusercontent.com/jefermorales/claude-session-sync/main/install.command>
+<https://github.com/jefermorales/claude-session-sync/releases/latest>
 
-> ⚠️ Si al abrir el link ves **código de texto en pantalla**, no copies. Es
-> normal — Safari muestra el contenido. Para descargarlo:
->
-> - **Click derecho** sobre el link de arriba → **"Guardar enlace como..."**
-> - Guardalo en **Descargas**.
-
-Después, **doble clic** en `install.command` desde la carpeta Descargas.
+1. En esa página, bajá hasta **"Assets"** y descargá
+   `claude-session-sync-installer.zip`.
+2. **Doble clic** en el ZIP — macOS lo descomprime y aparece `install.command`.
+3. **Doble clic** en `install.command`.
 
 ### ⚠️ Si te aparece "Apple no pudo verificar..."
 
