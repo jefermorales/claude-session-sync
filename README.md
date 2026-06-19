@@ -1,24 +1,124 @@
 # claude-session-sync
 
-Usá [Claude Code](https://docs.anthropic.com/en/docs/claude-code) en cualquier
-Mac con la **misma experiencia**: tus chats, skills, agents, memoria y
-configuración te siguen entre máquinas vía Google Drive.
+> Usá [Claude Code](https://docs.anthropic.com/en/docs/claude-code) en cualquier
+> Mac con la **misma experiencia**: chats, skills, agents, memoria y settings
+> sincronizados entre máquinas vía Google Drive — sin basura, sin paths
+> hardcodeados, con auto-reparación.
 
-- Solo lo portable viaja a Drive (chats, skills, settings).
-- Lo regenerable/pesado (`.git/` de plugins, caches) vive local y **nunca** sube.
-- Auto-limpieza en cada sesión: nunca acumulás basura.
-- Tolerante a cambio de nombre de usuario sin acción manual.
-- Wizard interactivo: detecta qué tenés instalado, instala lo que falta.
+```
+ ┌──────────────────────────────────────────────────────────────────┐
+ │  Drive sincroniza lo que importa.   Local guarda lo que se       │
+ │  regenera.   Auto-cleanup en cada sesión.   Cero acción manual.  │
+ └──────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## Filosofía
+## Instalación en una Mac nueva
 
-**Drive sincroniza lo que afecta tu experiencia. Local guarda lo que se regenera.**
+**Solo dos pasos. Lo demás es automático.**
+
+### Paso 1 — Configurar Google Drive (~5 min)
+
+1. Descargá Google Drive Desktop: <https://www.google.com/drive/download/>
+2. Iniciá sesión con tu cuenta de Google.
+3. En el ícono de Drive (barra de menú) → ⚙ Preferencias → **Mi unidad** →
+   activá **"Replicar archivos"**.
+4. Esperá a que Drive sincronice (~1-3 min la primera vez).
+
+> Por qué Replicar: en modo "Transmitir" los archivos están en la nube y
+> Claude Code da timeout al leerlos. Necesitamos los archivos en disco real.
+
+### Paso 2 — Descargar y ejecutar el instalador
+
+**Descargá el archivo desde acá:**
+
+<https://raw.githubusercontent.com/jefermorales/claude-session-sync/main/install.command>
+
+> ⚠️ Si al abrir el link ves **código de texto en pantalla**, no copies. Es
+> normal — Safari muestra el contenido. Para descargarlo:
+>
+> - **Click derecho** sobre el link de arriba → **"Guardar enlace como..."**
+> - Guardalo en **Descargas**.
+
+Después, **doble clic** en `install.command` desde la carpeta Descargas.
+
+### ⚠️ Si te aparece "Apple no pudo verificar..."
+
+Esto es **Gatekeeper de macOS** bloqueando el archivo descargado de internet.
+Solo pasa la primera vez. Tenés 2 formas de pasarlo:
+
+**Camino 1 — Click derecho (más rápido):**
+
+1. En Finder, andá a la carpeta **Descargas**
+2. **Click derecho** (o Control + clic) sobre `install.command`
+3. En el menú que aparece, elegí **"Abrir"**
+4. Aparece un diálogo **distinto** al del doble clic — ese sí tiene el botón
+   **"Abrir"** (gris pero clicable)
+5. Apretá **Abrir** → arranca el wizard
+
+**Camino 2 — System Settings (si el camino 1 no aparece):**
+
+1. Cerrá el diálogo del error con "Listo"
+2. **Menú Apple () → Configuración del sistema → Privacidad y seguridad**
+3. Bajá hasta la sección **"Seguridad"**
+4. Vas a ver: *"install.command fue bloqueado para protegerlo..."*
+5. Apretá **"Abrir de todos modos"**
+6. Te pide tu contraseña de la Mac → la metés
+7. Doble clic en `install.command` → ahora abre sin problemas
+
+> Después de hacer esto **una vez**, todos los doble clic futuros funcionan
+> sin warnings.
+
+### Lo que el instalador hace solo
+
+Sin tocar nada:
+
+- 🔍 Detecta qué dependencias ya tenés (no las reinstala)
+- 📦 Instala lo que falta: Xcode CLT (git), Homebrew, Node.js + npm,
+  Claude Code CLI, jq
+- 📂 Clona este repo en `~/Developer/claude-session-sync`
+- ⚙️ Corre el setup multi-Mac (`bootstrap-claude.sh`)
+- 🔁 Configura los hooks de auto-cleanup y lock multi-Mac
+- 🛠️ Si algo falla: copia el log al portapapeles y abre un Issue en GitHub
+  con todo precargado
+
+### Después de instalar
+
+```bash
+cd "$HOME/Mi unidad"          # o donde guardes tus proyectos
+claude --resume
+```
+
+Ves todos tus chats, skills, agents y settings sincronizados.
+
+---
+
+## Reparar / verificar / actualizar
+
+**Una sola app, un solo archivo.** El `install.command` es a la vez instalador,
+reparador y verificador.
+
+Si algo se rompe (cambio de nombre de usuario, basura acumulada, conflicto raro
+de Drive): **doble clic en `install.command`**.
+
+Lo que pasa:
+- Los items ya instalados aparecen ✓ deshabilitados con su versión actual
+- Solo elegís entre lo que falte
+- Si todo está OK, salta el menú y va directo a verificar/reparar el setup
+- Si la reparación falla, abre GitHub Issues con el log ya copiado al
+  portapapeles — solo pegás (Cmd+V) y reportás
+
+---
+
+## Cómo funciona
+
+**Filosofía:** Drive sincroniza lo que afecta tu experiencia. Local guarda lo
+regenerable.
 
 | Vive en Drive (portable) | Vive en `~/.claude-local/` (no sync) |
 |---|---|
-| `projects/` (chats) | `plugins/marketplaces/` (`.git` pesado) |
+| `projects/` (chats) | `plugins/marketplaces/` (.git pesado) |
 | `skills/` | `plugins/cache/` |
 | `agents/` | `plugins/data/` |
 | `memory/` | `file-history/`, `shell-snapshots/` |
@@ -27,87 +127,10 @@ configuración te siguen entre máquinas vía Google Drive.
 | `installed_plugins.json` (la lista) | `tasks/`, `jobs/`, `sessions/` |
 | `known_marketplaces.json` (la lista) | `backups/`, `ide/`, `session-env/` |
 
-Cuando cambiás de Mac, los plugins se **re-clonan automáticamente** desde GitHub
-usando la lista. Nunca subís un `.git/` a Drive.
+Cuando cambiás de Mac, los plugins se **re-clonan automáticamente** desde
+GitHub usando `known_marketplaces.json`. Nunca subís un `.git/` a Drive.
 
----
-
-## Setup en una Mac nueva
-
-**Solo 2 cosas manuales. Lo demás lo hace todo el wizard.**
-
-### Paso 1 — Google Drive (~5 min, manual inevitable)
-
-1. Descargá Drive Desktop: <https://www.google.com/drive/download/>
-2. Iniciá sesión con **tu cuenta de Google**
-3. Ícono de Drive → ⚙ Preferencias → Mi unidad → **Replicar archivos**
-4. Esperá a que sincronice (`Mi unidad/.claude/` debe pesar >50 MB después
-   de haber usado Claude Code al menos una vez en alguna Mac)
-
-> Por qué: en modo Transmitir los archivos no están en disco; Claude Code da timeout.
-
-### Paso 2 — Descargar y ejecutar el instalador
-
-**Abrí Safari y descargá este archivo:**
-
-<https://raw.githubusercontent.com/jefermorales/claude-session-sync/main/install.command>
-
-Click derecho en el link → **"Guardar enlace como..."** → guardalo en Descargas.
-
-**Doble clic en `install.command`** (en la carpeta Descargas).
-
-> **La primera vez, Gatekeeper de macOS bloquea.** Solución:
-> click derecho en `install.command` → **Abrir** → **Abrir** en el diálogo.
-> Solo la primera vez.
-
-### Lo que el wizard hace solo (sin que toques nada)
-
-- ✅ Detecta qué dependencias ya tenés (no las reinstala)
-- ✅ Instala Xcode Command Line Tools (incluye git)
-- ✅ Instala Homebrew
-- ✅ Instala Node.js + npm
-- ✅ Instala Claude Code CLI
-- ✅ Instala jq (opcional)
-- ✅ Clona este repo en `~/Developer/claude-session-sync`
-- ✅ Corre el bootstrap completo (symlinks, split Drive/local, hooks)
-- ✅ Si algo falla: copia el log al portapapeles, abre un Issue en GitHub solo
-
-### Cuando termina
-
-```bash
-cd "$HOME/Mi unidad"     # o donde guardes tus proyectos
-claude --resume
-```
-
-Ves todos tus chats, skills, agents y settings.
-
-### Modo avanzado (sin wizard)
-
-Si ya tenés todo instalado y solo querés re-aplicar el setup:
-
-```bash
-bash ~/Developer/claude-session-sync/bootstrap-claude.sh
-```
-
-Idempotente — corré las veces que quieras.
-
----
-
-## Qué hace el bootstrap
-
-1. **Detecta Google Drive** (locale es/en, paths nuevos y viejos)
-2. **Symlinkea** `~/.claude` → `Mi unidad/.claude`
-3. **Adapta paths al usuario** (`-Users-{viejo}-…` → `-Users-{nuevo}-…`)
-4. **Adapta locale** (`Mi-unidad` ↔ `My-Drive` en los paths)
-5. **Mueve a `~/.claude-local`** todo lo regenerable/pesado/.git
-6. **Re-clona marketplaces** desde GitHub a local (lee `known_marketplaces.json`)
-7. **Limpia basura acumulada** (`.DS_Store`, duplicados `(2)`, `.tmp.driveupload/*`)
-8. **Instala hooks** de cleanup + lock multi-Mac en `settings.json`
-9. **Reporta** qué hizo
-
----
-
-## Limpieza automática (hooks SessionStart + SessionEnd)
+### Limpieza automática
 
 Cada vez que **abrís** Claude Code (`SessionStart`) y cada vez que **cerrás**
 una sesión (`SessionEnd`), el script corre cleanup:
@@ -117,14 +140,9 @@ una sesión (`SessionEnd`), el script corre cleanup:
 - Limpia `.tmp.driveupload/`, `.tmp.drivedownload/` (>1 día = basura)
 - Borra archivos con sufijo `"Conflicted copy"` (conflictos de Drive)
 - Renombra carpetas si cambiaste el `$USER` de la Mac
-- Borra caches viejas:
-  - `image-cache/` >30 días
-  - `paste-cache/`, `shell-snapshots/` >7 días
-  - `file-history/` >60 días
+- Borra caches viejas (image, paste, shell, file-history)
 - En `SessionEnd`: libera el lock multi-Mac
 - Loguea cada corrida en `~/.claude-local/cleanup.log`
-
-**Resultado:** la basura nunca se acumula. Drive nunca recibe lo que no debe.
 
 ### Refuerzo extra: xattr `com.google.drivefs.ignore`
 
@@ -138,34 +156,17 @@ cuele por error, Drive las ignora.
 Cero paths absolutos hardcodeados:
 
 - **Hooks en `settings.json`** usan `$HOME` (no `/Users/{nombre}/...`). Si
-  renombrás el usuario, `$HOME` cambia y el hook se resuelve solo al nuevo path.
+  renombrás el usuario, `$HOME` cambia y el hook se resuelve al nuevo path.
 - **El cleanup auto-repara** el symlink `~/.claude` si quedó roto.
 - **El cleanup re-copia** el script desde el repo clonado si desapareció de
   `~/.claude-local/`.
 - **El cleanup renombra** las carpetas `-Users-{viejo}-...` →
   `-Users-{nuevo}-...` cuando detecta que `$USER` cambió.
 
-En la primera apertura de Claude tras el cambio de usuario, el hook
-`SessionStart` repara todo solo. **No tenés que correr nada manual.**
+En la primera apertura de Claude tras un cambio de usuario, el hook
+`SessionStart` repara todo solo. **Sin acción manual.**
 
-### Si algo falla — el mismo `install.command`
-
-**Una sola app, un solo archivo.** El `install.command` que usaste para
-instalar es el mismo que usás para reparar.
-
-Cuando algo se rompa (rarísimo): **doble clic en `install.command`**.
-
-- Detecta qué hay instalado y qué falta
-- Items ya instalados aparecen **deshabilitados** con su versión actual
-- Solo elegís entre lo que falta
-- Si TODO está instalado: salta el menú y va directo a verificar/reparar el setup multi-Mac
-
-Si la reparación falla: te abre la página de GitHub Issues con el log
-ya copiado al portapapeles. Pegás (Cmd+V) y reportás.
-
----
-
-## Detección multi-Mac (hook SessionStart)
+### Detección multi-Mac
 
 Si abrís Claude en otra Mac mientras una sesión está activa (<5 min), te avisa:
 
@@ -174,49 +175,45 @@ Si abrís Claude en otra Mac mientras una sesión está activa (<5 min), te avis
   Drive puede generar conflictos si usás ambas Macs a la vez.
 ```
 
-Es un **warning**, no un bloqueo. Usa el lock file `.claude/.active-session.json`.
+Es un warning, no un bloqueo. Usa el lock file `.claude/.active-session.json`.
 
-> Para uso simultáneo real (sin warning) habría que migrar a un repo Git en lugar
-> de Drive — Drive Mirror no soporta concurrencia segura. Por ahora: una Mac a la vez.
+> Drive Mirror no soporta concurrencia segura. Para uso simultáneo real
+> habría que migrar a un repo Git. Por ahora: una Mac a la vez.
 
 ---
 
-## Comandos
+## Comandos avanzados
 
 ```bash
-# Wizard interactivo (recomendado para Mac nueva)
+# Wizard interactivo (recomendado siempre)
 open install.command                     # o doble clic en Finder
 
-# Setup directo (sin wizard)
+# Setup directo (sin wizard, asumiendo deps instaladas)
 bash bootstrap-claude.sh                 # Setup completo (idempotente)
-bash bootstrap-claude.sh --cleanup       # Cleanup (hook SessionStart)
-bash bootstrap-claude.sh --session-end   # Cleanup + libera lock (hook SessionEnd)
-bash bootstrap-claude.sh --lock-check    # Lock-check (hook SessionStart)
-bash bootstrap-claude.sh --help          # Ayuda
+bash bootstrap-claude.sh --cleanup       # Cleanup manual
+bash bootstrap-claude.sh --session-end   # Cleanup + libera lock
+bash bootstrap-claude.sh --lock-check    # Lock-check manual
+bash bootstrap-claude.sh --help          # Ayuda completa
 ```
-
----
-
-## Lo que NO se porta automáticamente
-
-- **`~/.claude.json`** (config de runtime). Se regenera sola en cada Mac.
-- **Node.js / npm / Claude Code CLI**: hay que instalarlos en cada Mac
-  (el wizard lo hace por vos).
 
 ---
 
 ## Troubleshooting
 
-### `claude --resume` no muestra conversaciones
+### El instalador no se abre — "no se puede verificar el desarrollador"
 
-1. Confirmá que estás en el directorio correcto:
-   `cd "$HOME/Mi unidad"` (o donde guardes tus proyectos).
+Click derecho en `install.command` → **Abrir** → en el diálogo, **Abrir** otra
+vez. Es Gatekeeper, solo la primera vez.
+
+### `claude --resume` no muestra mis chats
+
+1. Confirmá que estás en el directorio correcto
+   (ej: `cd "$HOME/Mi unidad"`).
 2. Confirmá que Drive terminó de sincronizar:
    `du -sh "$HOME/Mi unidad/.claude/"` debe ser >50 MB.
-3. Volvé a correr el bootstrap:
-   `bash ~/Developer/claude-session-sync/bootstrap-claude.sh`.
+3. Doble clic en `install.command` para verificar/reparar.
 
-### Conversación específica no aparece
+### Conversación específica no aparece en la lista
 
 ```bash
 claude --resume <uuid-de-la-conversación>
@@ -224,40 +221,41 @@ claude --resume <uuid-de-la-conversación>
 
 El listador puede saltarse conversaciones muy grandes (>20 MB).
 
-### Dos Macs abiertas a la vez
-
-El hook `--lock-check` te avisa, pero **Drive Mirror no es seguro para uso
-concurrente**. Cerrá Claude en una Mac antes de abrirlo en otra.
-
 ### Drive sigue acumulando errores
 
-Doble clic en `install.command` (o desde terminal:
-`bash ~/Developer/claude-session-sync/bootstrap-claude.sh`).
-
-Re-correr limpia basura y rearma symlinks. Si persiste, pausá Drive,
-corré el bootstrap, y reactivá Drive.
+Doble clic en `install.command`. Re-correr limpia basura y rearma symlinks.
+Si persiste: pausá Drive desde el ícono de la barra, doble clic en
+`install.command`, y reactivá Drive.
 
 ### Quiero borrar `~/.claude-local` y empezar de cero
 
-Sí, podés. El bootstrap lo regenera todo en la próxima corrida (caches vacías,
-marketplaces re-clonados). Solo perdés caches efímeros — tus chats, skills,
-settings están en Drive, no se tocan.
+Lo podés hacer. El instalador lo regenera todo (caches vacías, marketplaces
+re-clonados). Solo perdés caches efímeros — **tus chats, skills y settings
+están en Drive, no se tocan**.
 
 ---
 
-## Para forkear este repo
+## Para forkear
 
 Si querés hostear tu propia versión:
 
 1. Fork desde GitHub
-2. En `install.command`, cambiá la línea:
+2. En `install.command`, cambiá:
    ```bash
    GITHUB_REPO="jefermorales/claude-session-sync"
    ```
-   por tu repo (`tuusuario/tu-fork`).
+   por `tuusuario/tu-fork`.
 3. Push.
 
 Ahora `install.command` clona tu fork.
+
+---
+
+## Qué NO se porta automáticamente
+
+- **`~/.claude.json`** (config de runtime). Se regenera sola en cada Mac.
+- **Node.js, npm, Claude Code CLI**: binarios del sistema. El instalador
+  los pone en cada Mac.
 
 ---
 
