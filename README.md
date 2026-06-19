@@ -1,4 +1,4 @@
-# claude-session-sync
+# Claude Code Sync
 
 > Usá [Claude Code](https://docs.anthropic.com/en/docs/claude-code) en cualquier
 > Mac con la **misma experiencia**: chats, skills, agents, memoria y settings
@@ -16,7 +16,7 @@
 
 ## Instalación en una Mac nueva
 
-**Solo dos pasos. Lo demás es automático.**
+**Solo dos pasos manuales. Lo demás lo hace el wizard.**
 
 ### Paso 1 — Configurar Google Drive (~5 min)
 
@@ -29,76 +29,42 @@
 > Por qué Replicar: en modo "Transmitir" los archivos están en la nube y
 > Claude Code da timeout al leerlos. Necesitamos los archivos en disco real.
 
-### Paso 2 — Descargar y ejecutar el instalador
+### Paso 2 — Descargar y abrir el wizard
 
-Andá a la página de Releases: <https://github.com/jefermorales/claude-session-sync/releases/latest>
+**Descargá el zip desde Releases:**
 
-En **"Assets"** vas a ver dos opciones — elegí la que prefieras:
+<https://github.com/jefermorales/claude-session-sync/releases/latest>
 
-**Opción A — App nativa de macOS (recomendada, sin terminal):**
+1. Descargá `Claude-Code-Sync.zip` (vas a verlo en "Assets")
+2. **Doble clic en el ZIP** → macOS lo descomprime y aparece la carpeta
+   **"Claude Code Sync"**
+3. Entrá a esa carpeta y hacé **doble clic en `launch.command`**
 
-1. Descargá `Claude-Code-Setup.zip`
-2. Doble clic en el ZIP → aparece **`Claude Code Setup.app`**
-3. Arrastrá la app a tu carpeta **Aplicaciones**
-4. Doble clic en la app → arranca con **diálogos nativos de macOS** (sin
-   terminal visible). Te muestra qué está instalado, te deja elegir los
-   opcionales con checkboxes, y va instalando con notificaciones del sistema.
+> ⚠️ **La primera vez, macOS bloquea** (Gatekeeper). Una vez y nunca más:
+>
+> - **Click derecho** sobre `launch.command` → **Abrir** → en el diálogo,
+>   apretá **Abrir** otra vez.
+> - Si en Sequoia no ves "Abrir" en el diálogo:
+>   → **Configuración del sistema → Privacidad y seguridad → Seguridad →
+>   "Abrir de todos modos"**.
 
-**Opción B — Script `.command` (más control, abre terminal):**
+### Qué pasa al hacer doble clic
 
-1. Descargá `claude-session-sync-installer.zip`
-2. Doble clic en el ZIP → aparece `install.command`
-3. Doble clic en `install.command` → wizard interactivo en terminal con
-   checkboxes navegables por flechas (↑↓ o W/S).
-
-Ambas opciones ejecutan la misma lógica de detección + instalación +
-bootstrap. La diferencia es la UI: la app usa diálogos macOS, el `.command`
-usa terminal.
-
-### ⚠️ Si te aparece "Apple no pudo verificar..."
-
-Esto es **Gatekeeper de macOS** bloqueando el archivo descargado de internet.
-Solo pasa la primera vez. Tenés 2 formas de pasarlo:
-
-**Camino 1 — Click derecho (más rápido):**
-
-1. En Finder, andá a la carpeta **Descargas**
-2. **Click derecho** (o Control + clic) sobre `install.command`
-3. En el menú que aparece, elegí **"Abrir"**
-4. Aparece un diálogo **distinto** al del doble clic — ese sí tiene el botón
-   **"Abrir"** (gris pero clicable)
-5. Apretá **Abrir** → arranca el wizard
-
-**Camino 2 — System Settings (si el camino 1 no aparece):**
-
-1. Cerrá el diálogo del error con "Listo"
-2. **Menú Apple () → Configuración del sistema → Privacidad y seguridad**
-3. Bajá hasta la sección **"Seguridad"**
-4. Vas a ver: *"install.command fue bloqueado para protegerlo..."*
-5. Apretá **"Abrir de todos modos"**
-6. Te pide tu contraseña de la Mac → la metés
-7. Doble clic en `install.command` → ahora abre sin problemas
-
-> Después de hacer esto **una vez**, todos los doble clic futuros funcionan
-> sin warnings.
-
-### Lo que el instalador hace solo
-
-Sin tocar nada:
-
-- 🔍 Detecta qué dependencias ya tenés (no las reinstala)
-- 📦 Instala lo que falta: Xcode CLT (git), Homebrew, Node.js + npm,
-  Claude Code CLI, jq
-- 📂 Clona este repo en `~/Developer/claude-session-sync`
-- ⚙️ Corre el setup multi-Mac (`bootstrap-claude.sh`)
-- 🔁 Configura los hooks de auto-cleanup y lock multi-Mac
-- 🛠️ Si algo falla: copia el log al portapapeles y abre un Issue en GitHub
-  con todo precargado
+- Por **~1 segundo** se ve una terminal arrancando Python
+- Después se abre **Safari automáticamente** con el wizard en
+  `http://127.0.0.1:8765/`
+- Vas a ver una UI nativa macOS con:
+  - **Bienvenida**
+  - **Verificación de Drive** (debe estar instalado + modo Replicar)
+  - **Componentes** — checkboxes nativos, items ya instalados aparecen
+    deshabilitados con su versión
+  - **Instalando** — progreso en vivo con cada paso
+  - **Listo** — comando para arrancar Claude
 
 ### Después de instalar
 
 ```bash
-cd "$HOME/Mi unidad"          # o donde guardes tus proyectos
+cd "$HOME/Mi unidad"     # o donde guardes tus proyectos
 claude --resume
 ```
 
@@ -106,27 +72,39 @@ Ves todos tus chats, skills, agents y settings sincronizados.
 
 ---
 
-## Reparar / verificar / actualizar
+## Reparar / actualizar — el mismo wizard
 
-**Una sola app, un solo archivo.** El `install.command` es a la vez instalador,
-reparador y verificador.
+**Un solo archivo, una sola app.** El `launch.command` que usaste para
+instalar es el mismo que usás para reparar o actualizar.
 
-Si algo se rompe (cambio de nombre de usuario, basura acumulada, conflicto raro
-de Drive): **doble clic en `install.command`**.
+Cuando algo se rompa (rarísimo) o querás verificar el estado:
+**doble clic en `launch.command`**.
 
-Lo que pasa:
-- Los items ya instalados aparecen ✓ deshabilitados con su versión actual
+- Detecta qué hay instalado y qué falta
+- Items ya instalados aparecen ✓ con su versión actual
 - Solo elegís entre lo que falte
-- Si todo está OK, salta el menú y va directo a verificar/reparar el setup
-- Si la reparación falla, abre GitHub Issues con el log ya copiado al
-  portapapeles — solo pegás (Cmd+V) y reportás
+- Si TODO está instalado, salta el menú y va directo a reparar/verificar
+- Si la reparación falla, abre GitHub Issues con el log al portapapeles
+
+---
+
+## Alternativa para usuarios de terminal
+
+Si preferís un instalador estilo CLI con checkboxes navegables por teclado:
+
+```bash
+bash install.command
+```
+
+Hace exactamente lo mismo pero en terminal. Útil para SSH o entornos donde
+no hay browser disponible.
 
 ---
 
 ## Cómo funciona
 
-**Filosofía:** Drive sincroniza lo que afecta tu experiencia. Local guarda lo
-regenerable.
+**Filosofía:** Drive sincroniza lo que afecta tu experiencia. Local guarda
+lo regenerable.
 
 | Vive en Drive (portable) | Vive en `~/.claude-local/` (no sync) |
 |---|---|
@@ -142,7 +120,19 @@ regenerable.
 Cuando cambiás de Mac, los plugins se **re-clonan automáticamente** desde
 GitHub usando `known_marketplaces.json`. Nunca subís un `.git/` a Drive.
 
-### Limpieza automática
+### Qué hace el bootstrap
+
+1. **Detecta Google Drive** (locale es/en, paths nuevos y viejos)
+2. **Symlinkea** `~/.claude` → `Mi unidad/.claude`
+3. **Adapta paths al usuario** (`-Users-{viejo}-…` → `-Users-{nuevo}-…`)
+4. **Adapta locale** (`Mi-unidad` ↔ `My-Drive` en los paths)
+5. **Mueve a `~/.claude-local`** todo lo regenerable/pesado/.git
+6. **Re-clona marketplaces** desde GitHub a local (lee `known_marketplaces.json`)
+7. **Limpia basura acumulada** (`.DS_Store`, duplicados `(2)`, `.tmp.driveupload/*`)
+8. **Instala hooks** de cleanup + lock multi-Mac en `settings.json`
+9. **Reporta** qué hizo
+
+### Limpieza automática (hooks SessionStart + SessionEnd)
 
 Cada vez que **abrís** Claude Code (`SessionStart`) y cada vez que **cerrás**
 una sesión (`SessionEnd`), el script corre cleanup:
@@ -155,6 +145,8 @@ una sesión (`SessionEnd`), el script corre cleanup:
 - Borra caches viejas (image, paste, shell, file-history)
 - En `SessionEnd`: libera el lock multi-Mac
 - Loguea cada corrida en `~/.claude-local/cleanup.log`
+
+**Resultado:** la basura nunca se acumula. Drive nunca recibe lo que no debe.
 
 ### Refuerzo extra: xattr `com.google.drivefs.ignore`
 
@@ -194,28 +186,58 @@ Es un warning, no un bloqueo. Usa el lock file `.claude/.active-session.json`.
 
 ---
 
-## Comandos avanzados
+## Stack técnico
+
+El wizard es lo más liviano que puede ser sin caer en Electron:
+
+| Pieza | Tecnología | Tamaño |
+|---|---|---|
+| Backend | Python 3 stdlib (sin pip) | 15 KB |
+| Frontend | HTML + CSS + JS vanilla (sin frameworks) | 26 KB |
+| Launcher | bash | 2 KB |
+| **Total** | — | **~50 KB descomprimido** |
+
+- Sin Apple Developer cert (gratis, sin $99/año)
+- Sin npm, sin Electron, sin dependencies
+- Python viene preinstalado con Xcode CLT
+- HTML/CSS/JS lo renderiza Safari o tu browser por default
+
+---
+
+## Comandos
 
 ```bash
-# Wizard interactivo (recomendado siempre)
-open install.command                     # o doble clic en Finder
+# Wizard web (recomendado)
+open "Claude Code Sync/launch.command"
 
-# Setup directo (sin wizard, asumiendo deps instaladas)
+# Wizard de terminal (alternativa CLI)
+bash install.command
+
+# Bootstrap directo (sin wizard, asumiendo deps instaladas)
 bash bootstrap-claude.sh                 # Setup completo (idempotente)
-bash bootstrap-claude.sh --cleanup       # Cleanup manual
-bash bootstrap-claude.sh --session-end   # Cleanup + libera lock
-bash bootstrap-claude.sh --lock-check    # Lock-check manual
-bash bootstrap-claude.sh --help          # Ayuda completa
+bash bootstrap-claude.sh --cleanup       # Cleanup (hook SessionStart)
+bash bootstrap-claude.sh --session-end   # Cleanup + libera lock (hook SessionEnd)
+bash bootstrap-claude.sh --lock-check    # Lock-check (hook SessionStart)
+bash bootstrap-claude.sh --help          # Ayuda
 ```
 
 ---
 
 ## Troubleshooting
 
-### El instalador no se abre — "no se puede verificar el desarrollador"
+### El wizard no se abre — "Apple no pudo verificar..."
 
-Click derecho en `install.command` → **Abrir** → en el diálogo, **Abrir** otra
-vez. Es Gatekeeper, solo la primera vez.
+Gatekeeper de macOS. Una vez:
+
+- **Click derecho** sobre `launch.command` → **Abrir** → **Abrir**
+- Si en Sequoia no aparece "Abrir": **Configuración → Privacidad y seguridad
+  → "Abrir de todos modos"**
+
+### El wizard se abre pero el browser no carga
+
+Andá manualmente a <http://127.0.0.1:8765/>. Si tampoco carga: hay otro
+proceso ocupando el puerto. Cerrá cualquier instancia anterior del wizard
+con `pkill -f "wizard/server.py"`.
 
 ### `claude --resume` no muestra mis chats
 
@@ -223,27 +245,19 @@ vez. Es Gatekeeper, solo la primera vez.
    (ej: `cd "$HOME/Mi unidad"`).
 2. Confirmá que Drive terminó de sincronizar:
    `du -sh "$HOME/Mi unidad/.claude/"` debe ser >50 MB.
-3. Doble clic en `install.command` para verificar/reparar.
-
-### Conversación específica no aparece en la lista
-
-```bash
-claude --resume <uuid-de-la-conversación>
-```
-
-El listador puede saltarse conversaciones muy grandes (>20 MB).
+3. Doble clic en `launch.command` para verificar/reparar.
 
 ### Drive sigue acumulando errores
 
-Doble clic en `install.command`. Re-correr limpia basura y rearma symlinks.
-Si persiste: pausá Drive desde el ícono de la barra, doble clic en
-`install.command`, y reactivá Drive.
+Doble clic en `launch.command`. Re-correr limpia basura y rearma symlinks.
+Si persiste: salí de Drive (ícono → Salir), reabrilo. Eso fuerza un
+re-escaneo del filesystem y limpia su cola fantasma.
 
 ### Quiero borrar `~/.claude-local` y empezar de cero
 
-Lo podés hacer. El instalador lo regenera todo (caches vacías, marketplaces
-re-clonados). Solo perdés caches efímeros — **tus chats, skills y settings
-están en Drive, no se tocan**.
+Lo podés hacer. El wizard regenera todo en la próxima corrida (caches
+vacías, marketplaces re-clonados). Solo perdés caches efímeros — **tus
+chats, skills y settings están en Drive, no se tocan**.
 
 ---
 
@@ -252,21 +266,20 @@ están en Drive, no se tocan**.
 Si querés hostear tu propia versión:
 
 1. Fork desde GitHub
-2. En `install.command`, cambiá:
-   ```bash
-   GITHUB_REPO="jefermorales/claude-session-sync"
+2. En `wizard/server.py`, cambiá:
+   ```python
+   subprocess.run(f"git clone https://github.com/jefermorales/claude-session-sync.git ...")
    ```
-   por `tuusuario/tu-fork`.
-3. Push.
-
-Ahora `install.command` clona tu fork.
+   por tu repo.
+3. En `wizard/launch.command`, cambiá la URL del clone.
+4. Push.
 
 ---
 
 ## Qué NO se porta automáticamente
 
 - **`~/.claude.json`** (config de runtime). Se regenera sola en cada Mac.
-- **Node.js, npm, Claude Code CLI**: binarios del sistema. El instalador
+- **Node.js, npm, Claude Code CLI**: binarios del sistema. El wizard
   los pone en cada Mac.
 
 ---
