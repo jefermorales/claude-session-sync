@@ -152,13 +152,12 @@ EOF
     IFS= read -rsn1 key
     case "$key" in
       $'\x1b')
-        # Arrow keys: ESC [ A/B/C/D. Leemos byte por byte con timeout amplio
-        # para que terminales lentas también funcionen.
-        IFS= read -rsn1 -t 0.5 b1 || b1=""
-        IFS= read -rsn1 -t 0.5 b2 || b2=""
-        case "${b1}${b2}" in
-          "[A") cursor=$(next_selectable "$cursor" -1) ;;
-          "[B") cursor=$(next_selectable "$cursor" 1) ;;
+        # Arrow keys: pueden venir como ESC[A o ESCOA según la terminal.
+        # Leemos hasta 5 bytes con timeout amplio y matcheamos por terminación.
+        IFS= read -rsn5 -t 0.5 rest || rest=""
+        case "$rest" in
+          *A) cursor=$(next_selectable "$cursor" -1) ;;  # arriba
+          *B) cursor=$(next_selectable "$cursor" 1) ;;   # abajo
         esac
         ;;
       k|K|w|W) cursor=$(next_selectable "$cursor" -1) ;;
