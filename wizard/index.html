@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code Sync</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="card">
+  <!-- Header con pasos -->
+  <header class="head">
+    <div class="logo">
+      <span class="logo-glyph"></span>
+      <div>
+        <div class="logo-title">Claude Code Sync</div>
+        <div class="logo-sub">Multi-Mac sync vía Google Drive</div>
+      </div>
+    </div>
+    <ol class="steps" id="steps">
+      <li data-step="1">Inicio</li>
+      <li data-step="2">Drive</li>
+      <li data-step="3">Componentes</li>
+      <li data-step="4">Instalando</li>
+      <li data-step="5">Listo</li>
+    </ol>
+  </header>
+
+  <!-- Sección 1: Bienvenida -->
+  <section class="screen" data-screen="1">
+    <div class="hero">
+      <div class="hero-icon">↻</div>
+      <h1>Configurá Claude Code en esta Mac</h1>
+      <p>
+        Sincronizá tus chats, skills, agents, memoria y settings entre todas
+        tus Macs. Sin basura, sin archivos pesados que llenan tu nube.
+      </p>
+    </div>
+    <ul class="bullets">
+      <li>Solo lo que afecta tu experiencia viaja a Drive</li>
+      <li>Lo regenerable (caches, <code>.git</code> de plugins) queda local</li>
+      <li>Auto-limpieza en cada sesión: cero acumulación de basura</li>
+      <li>Tolerante a cambio de nombre de usuario sin intervención</li>
+    </ul>
+    <footer class="actions">
+      <button class="btn ghost" id="btn-cancel-1">Cancelar</button>
+      <button class="btn primary" id="btn-go-2">Empezar →</button>
+    </footer>
+  </section>
+
+  <!-- Sección 2: Drive -->
+  <section class="screen hidden" data-screen="2">
+    <h2>Verificando Google Drive</h2>
+    <div class="checklist" id="drive-checks">
+      <div class="check" data-key="installed">
+        <span class="dot"></span> Drive Desktop instalado
+      </div>
+      <div class="check" data-key="replicating">
+        <span class="dot"></span> Modo <strong>"Replicar archivos"</strong> activo
+      </div>
+    </div>
+    <div class="info-box" id="drive-help" hidden>
+      <strong>Si falta algo:</strong>
+      <ol>
+        <li>Descargá Drive Desktop si no lo tenés:
+          <a href="https://www.google.com/drive/download/" target="_blank">google.com/drive/download</a>
+        </li>
+        <li>Iniciá sesión con tu cuenta de Google</li>
+        <li>Ícono de Drive → ⚙ Preferencias → Mi unidad → "Replicar archivos"</li>
+        <li>Esperá a que sincronice (<code>~/Mi unidad/.claude/</code> debe pesar &gt;50 MB)</li>
+      </ol>
+    </div>
+    <footer class="actions">
+      <button class="btn ghost" id="btn-back-1">← Atrás</button>
+      <button class="btn ghost" id="btn-recheck">Revisar de nuevo</button>
+      <button class="btn primary" id="btn-go-3" disabled>Continuar →</button>
+    </footer>
+  </section>
+
+  <!-- Sección 3: Componentes -->
+  <section class="screen hidden" data-screen="3">
+    <h2>Componentes</h2>
+    <p class="sub">Detecté qué tenés instalado en tu Mac. Solo elegís entre lo que falta.</p>
+
+    <h3 class="block-title">Obligatorios</h3>
+    <ul class="dep-list" id="deps-required"></ul>
+
+    <h3 class="block-title">Opcionales</h3>
+    <ul class="dep-list" id="deps-optional">
+      <li class="dep">
+        <label>
+          <input type="checkbox" data-opt="session_end" checked>
+          <span class="dep-name">Cleanup al cerrar Claude</span>
+          <span class="dep-meta">Hook SessionEnd — limpia basura también al cerrar</span>
+        </label>
+      </li>
+      <li class="dep">
+        <label>
+          <input type="checkbox" data-opt="lock" checked>
+          <span class="dep-name">Lock multi-Mac</span>
+          <span class="dep-meta">Te avisa si Claude está abierto en otra Mac</span>
+        </label>
+      </li>
+    </ul>
+
+    <footer class="actions">
+      <button class="btn ghost" id="btn-back-2">← Atrás</button>
+      <button class="btn primary" id="btn-go-4">Continuar →</button>
+    </footer>
+  </section>
+
+  <!-- Sección 4: Instalando -->
+  <section class="screen hidden" data-screen="4">
+    <h2>Instalando</h2>
+    <p class="sub">No cierres esta ventana hasta que termine.</p>
+
+    <ol class="install-steps" id="install-steps"></ol>
+
+    <details class="log-wrap" open>
+      <summary>Salida en vivo</summary>
+      <pre class="log" id="install-log"></pre>
+    </details>
+
+    <footer class="actions">
+      <span class="hint" id="install-hint">Esto puede tardar varios minutos…</span>
+    </footer>
+  </section>
+
+  <!-- Sección 5: Listo -->
+  <section class="screen hidden" data-screen="5">
+    <div class="hero success">
+      <div class="hero-icon">✓</div>
+      <h1>Setup completo</h1>
+      <p>Tu Mac está lista. Tus chats y configuración están sincronizados.</p>
+    </div>
+    <h3 class="block-title">Próximos pasos</h3>
+    <div class="codebox">
+      <code id="next-cmd">cd "$HOME/Mi unidad"
+claude --resume</code>
+      <button class="btn small" id="copy-cmd">Copiar</button>
+    </div>
+    <p class="sub">
+      Si algo falla en el futuro, doble clic en este mismo instalador. Detecta
+      el estado y repara solo.
+    </p>
+    <footer class="actions">
+      <button class="btn primary" id="btn-close">Cerrar</button>
+    </footer>
+  </section>
+
+  <!-- Sección error -->
+  <section class="screen hidden" data-screen="error">
+    <div class="hero error">
+      <div class="hero-icon">!</div>
+      <h1>Hubo un error</h1>
+      <p id="error-msg"></p>
+    </div>
+    <details class="log-wrap" open>
+      <summary>Log</summary>
+      <pre class="log" id="error-log"></pre>
+    </details>
+    <footer class="actions">
+      <button class="btn ghost" id="btn-copy-log">Copiar log</button>
+      <button class="btn primary" id="btn-report">Abrir GitHub Issues</button>
+    </footer>
+  </section>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
